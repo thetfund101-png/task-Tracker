@@ -88,11 +88,7 @@ export function TaskFilterBar({
           ))}
         </select>
 
-        <select
-          value={sortKey}
-          onChange={(e) => onSortChange(e.target.value as SortKey)}
-          className={selectClass}
-        >
+        <select value={sortKey} onChange={(e) => onSortChange(e.target.value as SortKey)} className={selectClass}>
           {(Object.keys(SORT_LABELS) as SortKey[]).map((s) => (
             <option key={s} value={s}>
               {SORT_LABELS[s]}

@@ -6,13 +6,7 @@ export interface ToastItem {
   tone: 'success' | 'error' | 'info'
 }
 
-export function ToastStack({
-  toasts,
-  onDismiss,
-}: {
-  toasts: ToastItem[]
-  onDismiss: (id: string) => void
-}) {
+export function ToastStack({ toasts, onDismiss }: { toasts: ToastItem[]; onDismiss: (id: string) => void }) {
   return (
     <div className="fixed bottom-4 left-1/2 z-50 flex w-full max-w-sm -translate-x-1/2 flex-col gap-2 px-4 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0">
       {toasts.map((t) => (

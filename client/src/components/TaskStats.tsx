@@ -11,20 +11,26 @@ export function TaskStats({
     dueToday: number
     dueThisWeek: number
     subtasksCompleted: number
+    openFollowUps?: number
   }
 }) {
   const cards = [
     { label: 'Total tasks', value: stats.total, accent: 'text-ink dark:text-paper' },
-    { label: 'Active', value: stats.todo + stats.inProgress + stats.onHold, accent: 'text-teal-800 dark:text-teal-300' },
+    {
+      label: 'Active',
+      value: stats.todo + stats.inProgress + stats.onHold,
+      accent: 'text-teal-800 dark:text-teal-300',
+    },
     { label: 'Completed', value: stats.completed, accent: 'text-emerald-600 dark:text-emerald-300' },
     { label: 'Overdue', value: stats.overdue, accent: 'text-red-500' },
     { label: 'Due today', value: stats.dueToday, accent: 'text-gold-500' },
     { label: 'Due this week', value: stats.dueThisWeek, accent: 'text-teal-800 dark:text-teal-300' },
     { label: 'Subtasks done', value: stats.subtasksCompleted, accent: 'text-emerald-600 dark:text-emerald-300' },
+    { label: 'Open follow-ups', value: stats.openFollowUps ?? 0, accent: 'text-gold-500' },
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-7">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-8">
       {cards.map((c) => (
         <div
           key={c.label}

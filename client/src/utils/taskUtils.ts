@@ -1,7 +1,11 @@
 import { FollowUp, Subtask, Task, TaskPriority, TaskStatus } from '../types/task'
 import { getDueState, nowISO, todayISO } from './dateUtils'
 
-export function createEmptyTask(defaults: { priority?: TaskPriority; category?: string; dueDate?: string | null }): Task {
+export function createEmptyTask(defaults: {
+  priority?: TaskPriority
+  category?: string
+  dueDate?: string | null
+}): Task {
   return {
     id: crypto.randomUUID(),
     title: '',
@@ -25,21 +29,19 @@ export function normalizeTask(input: Partial<Task> | null | undefined): Task {
     id: task.id || crypto.randomUUID(),
     title: typeof task.title === 'string' ? task.title : '',
     description: typeof task.description === 'string' ? task.description : '',
-    status: task.status && ['todo', 'in-progress', 'completed', 'on-hold'].includes(task.status)
-      ? task.status
-      : 'todo',
-    priority: task.priority && ['low', 'medium', 'high', 'urgent'].includes(task.priority)
-      ? task.priority
-      : 'medium',
+    status: task.status && ['todo', 'in-progress', 'completed', 'on-hold'].includes(task.status) ? task.status : 'todo',
+    priority: task.priority && ['low', 'medium', 'high', 'urgent'].includes(task.priority) ? task.priority : 'medium',
     category: typeof task.category === 'string' ? task.category : 'General',
     dueDate: typeof task.dueDate === 'string' && task.dueDate ? task.dueDate : null,
     followUps: Array.isArray(task.followUps) ? task.followUps : [],
     createdAt,
     updatedAt: task.updatedAt || createdAt,
     subtasks: Array.isArray(task.subtasks)
-      ? task.subtasks.filter((subtask): subtask is Subtask =>
-          Boolean(subtask && typeof subtask.id === 'string' && typeof subtask.title === 'string'),
-        ).map((subtask) => ({ ...subtask, done: Boolean(subtask.done) }))
+      ? task.subtasks
+          .filter((subtask): subtask is Subtask =>
+            Boolean(subtask && typeof subtask.id === 'string' && typeof subtask.title === 'string'),
+          )
+          .map((subtask) => ({ ...subtask, done: Boolean(subtask.done) }))
       : [],
   }
 }
@@ -122,7 +124,9 @@ export function filterTasks(tasks: Task[], filters: TaskFilters): Task[] {
         t.dueDate ?? '',
         ...t.subtasks.map((subtask) => subtask.title),
         ...t.followUps.map((followUp) => `${followUp.date} ${followUp.note}`),
-      ].join(' ').toLowerCase()
+      ]
+        .join(' ')
+        .toLowerCase()
       if (!haystack.includes(q)) return false
     }
     return true

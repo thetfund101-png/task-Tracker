@@ -4,8 +4,16 @@ import { TaskCard } from './TaskCard'
 import { computeStats, getOpenFollowUps } from '../utils/taskUtils'
 import { getDueState } from '../utils/dateUtils'
 
+export interface DashboardSummary {
+  stats: ReturnType<typeof computeStats> & { openFollowUps: number }
+  needsAttention: Task[]
+  recentlyUpdated: Task[]
+  openFollowUps: { task: Task; followUp: Task['followUps'][number] }[]
+}
+
 export function Dashboard({
   tasks,
+  summary,
   onToggleComplete,
   onEdit,
   onDelete,
@@ -13,22 +21,28 @@ export function Dashboard({
   onAddFollowUp,
 }: {
   tasks: Task[]
+  summary?: DashboardSummary | null
   onToggleComplete: (id: string) => void
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   onDuplicate: (task: Task) => void
   onAddFollowUp: (task: Task) => void
 }) {
-  const stats = computeStats(tasks)
+  const stats = summary?.stats ?? computeStats(tasks)
 
-  const dueSoon = tasks
-    .filter((t) => t.status !== 'completed' && (getDueState(t.dueDate) === 'today' || getDueState(t.dueDate) === 'overdue'))
-    .slice(0, 5)
+  const dueSoon =
+    summary?.needsAttention ??
+    tasks
+      .filter(
+        (t) => t.status !== 'completed' && (getDueState(t.dueDate) === 'today' || getDueState(t.dueDate) === 'overdue'),
+      )
+      .slice(0, 5)
 
-  const recent = [...tasks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5)
-  const openFollowUps = tasks
-    .flatMap((task) => getOpenFollowUps(task).map((followUp) => ({ task, followUp })))
-    .slice(0, 5)
+  const recent =
+    summary?.recentlyUpdated ?? [...tasks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5)
+  const openFollowUps =
+    summary?.openFollowUps ??
+    tasks.flatMap((task) => getOpenFollowUps(task).map((followUp) => ({ task, followUp }))).slice(0, 5)
 
   return (
     <div className="flex flex-col gap-8">
@@ -68,7 +82,9 @@ export function Dashboard({
               >
                 <span className="min-w-0">
                   <span className="block truncate font-medium text-ink dark:text-paper">{task.title}</span>
-                  {followUp.note && <span className="mt-0.5 block text-sm text-slate-500 dark:text-slate-400">{followUp.note}</span>}
+                  {followUp.note && (
+                    <span className="mt-0.5 block text-sm text-slate-500 dark:text-slate-400">{followUp.note}</span>
+                  )}
                 </span>
                 <span className="shrink-0 text-xs font-medium text-gold-500">{followUp.date}</span>
               </button>
@@ -105,9 +121,7 @@ function EmptyState() {
   return (
     <div className="rounded-xl border border-dashed border-slate-400/30 px-6 py-10 text-center">
       <p className="font-display text-lg text-ink dark:text-paper">No tasks yet</p>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Create your first task to see it show up here.
-      </p>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your first task to see it show up here.</p>
     </div>
   )
 }

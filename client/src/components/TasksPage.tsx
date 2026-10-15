@@ -50,18 +50,25 @@ export function TasksPage({
   const [sortKey, setSortKey] = useState<SortKey>('newest')
 
   const visible = useMemo(() => {
-    const tabFiltered = tab === 'all'
-      ? tasks
-      : tab === 'follow-up'
-      ? tasks.filter((t) => getOpenFollowUps(t).length > 0)
-      : tasks.filter((t) => t.status === tab)
+    const tabFiltered =
+      tab === 'all'
+        ? tasks
+        : tab === 'follow-up'
+          ? tasks.filter((t) => getOpenFollowUps(t).length > 0)
+          : tasks.filter((t) => t.status === tab)
     const filtered = filterTasks(applyQuickFilter(tabFiltered, quickFilter), filters)
     return sortTasks(filtered, sortKey)
   }, [tasks, tab, quickFilter, filters, sortKey])
 
   return (
     <div className="flex flex-col gap-4">
-      <TaskFilterBar filters={filters} onFiltersChange={setFilters} categories={categories} sortKey={sortKey} onSortChange={setSortKey} />
+      <TaskFilterBar
+        filters={filters}
+        onFiltersChange={setFilters}
+        categories={categories}
+        sortKey={sortKey}
+        onSortChange={setSortKey}
+      />
 
       <div className="flex flex-wrap gap-2" aria-label="Quick task filters">
         {QUICK_FILTERS.map((filter) => (
@@ -90,7 +97,9 @@ export function TasksPage({
             }`}
           >
             {t.label}
-            {tab === t.id && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-teal-800 dark:bg-gold-400" />}
+            {tab === t.id && (
+              <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-teal-800 dark:bg-gold-400" />
+            )}
           </button>
         ))}
       </div>

@@ -91,9 +91,18 @@ export function CalendarPage({
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-red-500" />Overdue</span>
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-gold-500" />Today</span>
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-teal-700" />Upcoming</span>
+          <span className="flex items-center gap-1.5">
+            <i className="h-2 w-2 rounded-full bg-red-500" />
+            Overdue
+          </span>
+          <span className="flex items-center gap-1.5">
+            <i className="h-2 w-2 rounded-full bg-gold-500" />
+            Today
+          </span>
+          <span className="flex items-center gap-1.5">
+            <i className="h-2 w-2 rounded-full bg-teal-700" />
+            Upcoming
+          </span>
           <span className="hidden sm:inline">Drag a task to reschedule</span>
         </div>
       </div>
@@ -101,7 +110,10 @@ export function CalendarPage({
       <div className="overflow-hidden rounded-xl border border-slate-400/20 bg-white shadow-card dark:border-teal-800 dark:bg-teal-900/50">
         <div className="grid grid-cols-7 border-b border-slate-400/15 dark:border-teal-800">
           {WEEKDAYS.map((weekday) => (
-            <div key={weekday} className="px-1 py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 sm:px-3 sm:py-3">
+            <div
+              key={weekday}
+              className="px-1 py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 sm:px-3 sm:py-3"
+            >
               {weekday}
             </div>
           ))}
@@ -129,8 +141,8 @@ export function CalendarPage({
                       isToday
                         ? 'bg-gold-500 text-white'
                         : isCurrentMonth
-                        ? 'text-ink hover:bg-slate-400/15 dark:text-paper'
-                        : 'text-slate-400 hover:bg-slate-400/15'
+                          ? 'text-ink hover:bg-slate-400/15 dark:text-paper'
+                          : 'text-slate-400 hover:bg-slate-400/15'
                     }`}
                   >
                     {date.getDate()}
@@ -146,13 +158,14 @@ export function CalendarPage({
                 <div className="flex flex-col gap-1">
                   {dayTasks.slice(0, 3).map((task) => {
                     const overdue = task.status !== 'completed' && key < today
-                    const tone = task.status === 'completed'
-                      ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                      : overdue
-                      ? 'bg-red-500/10 text-red-600 dark:text-red-300'
-                      : isToday
-                      ? 'bg-gold-500/15 text-gold-600 dark:text-gold-300'
-                      : 'bg-teal-700/10 text-teal-800 dark:text-teal-300'
+                    const tone =
+                      task.status === 'completed'
+                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                        : overdue
+                          ? 'bg-red-500/10 text-red-600 dark:text-red-300'
+                          : isToday
+                            ? 'bg-gold-500/15 text-gold-600 dark:text-gold-300'
+                            : 'bg-teal-700/10 text-teal-800 dark:text-teal-300'
                     return (
                       <button
                         key={task.id}
@@ -167,7 +180,9 @@ export function CalendarPage({
                     )
                   })}
                   {dayTasks.length > 3 && (
-                    <span className="px-1 text-[10px] text-slate-500 dark:text-slate-400">+{dayTasks.length - 3} more</span>
+                    <span className="px-1 text-[10px] text-slate-500 dark:text-slate-400">
+                      +{dayTasks.length - 3} more
+                    </span>
                   )}
                 </div>
               </div>

@@ -48,8 +48,8 @@ export function TaskCard({
     dueState === 'overdue' && !isDone
       ? 'text-red-500'
       : dueState === 'today' && !isDone
-      ? 'text-gold-500'
-      : 'text-slate-500 dark:text-slate-400'
+        ? 'text-gold-500'
+        : 'text-slate-500 dark:text-slate-400'
 
   return (
     <div className="group flex items-start gap-3 rounded-xl border border-slate-400/15 bg-white px-4 py-3.5 shadow-card transition hover:border-teal-700/25 dark:bg-teal-900/60 dark:border-teal-800">
@@ -57,14 +57,18 @@ export function TaskCard({
         onClick={() => onToggleComplete(task.id)}
         aria-label={isDone ? 'Mark as not completed' : 'Mark as completed'}
         className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition ${
-          isDone
-            ? 'border-teal-700 bg-teal-700 text-white'
-            : 'border-slate-400/50 hover:border-teal-700'
+          isDone ? 'border-teal-700 bg-teal-700 text-white' : 'border-slate-400/50 hover:border-teal-700'
         }`}
       >
         {isDone && (
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M5 13l4 4L19 7"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         )}
       </button>
@@ -97,7 +101,15 @@ export function TaskCard({
             onClick={() => onAddFollowUp(task)}
             className="mt-2 flex items-center gap-1.5 rounded-md bg-gold-400/15 px-2 py-1 text-xs font-medium text-gold-500 hover:bg-gold-400/25"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M12 5v14M5 12h14" />
             </svg>
             {openFollowUps.length} open follow-up{openFollowUps.length === 1 ? '' : 's'}
@@ -109,7 +121,15 @@ export function TaskCard({
             onClick={() => onAddFollowUp(task)}
             className="mt-2 flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900 dark:text-gold-400 dark:hover:text-gold-300"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M12 5v14M5 12h14" />
             </svg>
             Add follow-up
@@ -119,10 +139,7 @@ export function TaskCard({
         {progress && (
           <div className="mt-2">
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-400/15">
-              <div
-                className="h-full rounded-full bg-teal-700 transition-all"
-                style={{ width: `${progress.pct}%` }}
-              />
+              <div className="h-full rounded-full bg-teal-700 transition-all" style={{ width: `${progress.pct}%` }} />
             </div>
             <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
               {progress.done} of {progress.total} subtasks completed
@@ -171,7 +188,16 @@ function IconButton({
         danger ? 'hover:text-red-500' : 'hover:text-teal-800 dark:hover:text-paper'
       }`}
     >
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         {children}
       </svg>
     </button>

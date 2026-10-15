@@ -6,11 +6,13 @@ import { addFollowUp, deleteFollowUp, toggleFollowUp } from '../utils/taskUtils'
 export function TaskForm({
   initial,
   categories,
+  assignableUsers = [],
   onSave,
   onCancel,
 }: {
   initial: Task
   categories: string[]
+  assignableUsers?: { id: string; name: string; email: string }[]
   onSave: (task: Task) => void
   onCancel: () => void
 }) {
@@ -19,6 +21,7 @@ export function TaskForm({
   const [priority, setPriority] = useState<TaskPriority>(initial.priority)
   const [status, setStatus] = useState<TaskStatus>(initial.status)
   const [category, setCategory] = useState(initial.category)
+  const [assignedTo, setAssignedTo] = useState(initial.assignedTo ?? '')
   const [customCategory, setCustomCategory] = useState('')
   const [dueDate, setDueDate] = useState(initial.dueDate ?? '')
   const [subtasks, setSubtasks] = useState<Subtask[]>(initial.subtasks ?? [])
@@ -44,6 +47,7 @@ export function TaskForm({
       priority,
       status,
       category: finalCategory,
+      assignedTo: assignedTo || null,
       dueDate: dueDate || null,
       subtasks,
       followUps,
@@ -74,9 +78,7 @@ export function TaskForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-          Task title
-        </label>
+        <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Task title</label>
         <input
           autoFocus
           value={title}
@@ -88,9 +90,7 @@ export function TaskForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-          Description
-        </label>
+        <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -102,9 +102,7 @@ export function TaskForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-            Priority
-          </label>
+          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Priority</label>
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value as TaskPriority)}
@@ -118,10 +116,26 @@ export function TaskForm({
           </select>
         </div>
 
+        {assignableUsers.length > 0 && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Assigned to</label>
+            <select
+              value={assignedTo}
+              onChange={(event) => setAssignedTo(event.target.value)}
+              className="w-full rounded-lg border border-slate-400/30 bg-transparent px-3 py-2 text-ink dark:text-paper dark:[color-scheme:dark]"
+            >
+              <option value="">Unassigned</option>
+              {assignableUsers.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.email})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-            Status
-          </label>
+          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as TaskStatus)}
@@ -144,11 +158,14 @@ export function TaskForm({
           </span>
         </div>
         {subtasks.length > 0 && (
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-400/15" role="progressbar"
+          <div
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-400/15"
+            role="progressbar"
             aria-valuenow={subtasks.filter((subtask) => subtask.done).length}
             aria-valuemin={0}
             aria-valuemax={subtasks.length}
-            aria-label="Subtask completion">
+            aria-label="Subtask completion"
+          >
             <div
               className="h-full rounded-full bg-teal-700 transition-all"
               style={{ width: `${(subtasks.filter((subtask) => subtask.done).length / subtasks.length) * 100}%` }}
@@ -158,21 +175,28 @@ export function TaskForm({
         {subtasks.length > 0 && (
           <div className="mt-2 flex flex-col gap-2">
             {subtasks.map((subtask) => (
-              <div key={subtask.id} className="flex items-center gap-2 rounded-lg bg-paper/70 px-3 py-2 dark:bg-teal-800/60">
+              <div
+                key={subtask.id}
+                className="flex items-center gap-2 rounded-lg bg-paper/70 px-3 py-2 dark:bg-teal-800/60"
+              >
                 <input
                   type="checkbox"
                   checked={subtask.done}
-                  onChange={() => setSubtasks((current) =>
-                    current.map((item) => item.id === subtask.id ? { ...item, done: !item.done } : item),
-                  )}
+                  onChange={() =>
+                    setSubtasks((current) =>
+                      current.map((item) => (item.id === subtask.id ? { ...item, done: !item.done } : item)),
+                    )
+                  }
                   aria-label={`Mark ${subtask.title} as ${subtask.done ? 'incomplete' : 'complete'}`}
                   className="accent-teal-700"
                 />
                 <input
                   value={subtask.title}
-                  onChange={(e) => setSubtasks((current) =>
-                    current.map((item) => item.id === subtask.id ? { ...item, title: e.target.value } : item),
-                  )}
+                  onChange={(e) =>
+                    setSubtasks((current) =>
+                      current.map((item) => (item.id === subtask.id ? { ...item, title: e.target.value } : item)),
+                    )
+                  }
                   aria-label="Subtask title"
                   className={`min-w-0 flex-1 bg-transparent text-sm text-ink focus:outline-none dark:text-paper ${subtask.done ? 'line-through opacity-50' : ''}`}
                 />
@@ -218,23 +242,32 @@ export function TaskForm({
         {followUps.length > 0 && (
           <div className="mt-2 flex flex-col gap-2">
             {followUps.map((followUp) => (
-              <div key={followUp.id} className="flex items-start gap-2 rounded-lg bg-paper/70 px-3 py-2 dark:bg-teal-800/60">
+              <div
+                key={followUp.id}
+                className="flex items-start gap-2 rounded-lg bg-paper/70 px-3 py-2 dark:bg-teal-800/60"
+              >
                 <input
                   type="checkbox"
                   checked={followUp.completed}
-                  onChange={() => setFollowUps((current) => toggleFollowUp({ ...initial, followUps: current }, followUp.id).followUps)}
+                  onChange={() =>
+                    setFollowUps((current) => toggleFollowUp({ ...initial, followUps: current }, followUp.id).followUps)
+                  }
                   className="mt-1 accent-teal-700"
                   aria-label={`Mark follow-up for ${followUp.date} as complete`}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className={`text-sm font-medium text-ink dark:text-paper ${followUp.completed ? 'line-through opacity-50' : ''}`}>
+                  <p
+                    className={`text-sm font-medium text-ink dark:text-paper ${followUp.completed ? 'line-through opacity-50' : ''}`}
+                  >
                     {followUp.date}
                   </p>
                   {followUp.note && <p className="text-xs text-slate-500 dark:text-slate-400">{followUp.note}</p>}
                 </div>
                 <button
                   type="button"
-                  onClick={() => setFollowUps((current) => deleteFollowUp({ ...initial, followUps: current }, followUp.id).followUps)}
+                  onClick={() =>
+                    setFollowUps((current) => deleteFollowUp({ ...initial, followUps: current }, followUp.id).followUps)
+                  }
                   className="text-xs text-red-500 hover:text-red-700"
                 >
                   Delete
@@ -275,9 +308,7 @@ export function TaskForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-            Category
-          </label>
+          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -301,9 +332,7 @@ export function TaskForm({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">
-            Due date
-          </label>
+          <label className="mb-1 block text-sm font-medium text-slate-500 dark:text-slate-400">Due date</label>
           <input
             type="date"
             value={dueDate}

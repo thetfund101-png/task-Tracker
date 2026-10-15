@@ -26,6 +26,8 @@ export interface Task {
   createdAt: string
   updatedAt: string
   subtasks: Subtask[]
+  createdBy?: string
+  assignedTo?: string | null
 }
 
 export const DEFAULT_CATEGORIES = [
