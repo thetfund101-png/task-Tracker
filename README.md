@@ -123,3 +123,27 @@ XAMPP is for local development and testing, not production. Before production:
 - Run `npm audit`, the build, lint, and tests as part of release checks; keep dependencies and the OpenAPI contract reviewed and current.
 
 Additional hardening such as MFA, email-based password reset, and centralized backup/retention policies can be added as follow-up work.
+
+### Render API setup
+
+The root [`render.yaml`](./render.yaml) defines the Node.js API service, build and start commands, health check, production cookie settings, and generated JWT secrets. In Render, create a Blueprint from this repository and provide the prompted `CLIENT_ORIGIN` and database variables using a reachable MySQL/MariaDB provider. Render's managed PostgreSQL is not compatible with this application's MySQL driver.
+
+Set `CLIENT_ORIGIN` to the exact HTTPS frontend origin without a trailing slash or path. The runtime database user should be limited to `SELECT`, `INSERT`, `UPDATE`, and `DELETE`; use a separate migration user with the permissions needed by the SQL migrations. Do not use the demo credentials from `server/db/demo-setup.sql`.
+
+After the database variables are configured, apply migrations and seed the first admin once. Run these commands in PowerShell on a trusted machine that can reach the database. Set the `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_MIGRATION_USER`, and `DB_MIGRATION_PASSWORD` process environment variables to the production database's reachable connection values first; use its public host when running outside the database provider's private network. Do not use values from the local demo setup.
+
+```powershell
+$env:DB_HOST = "your-database-host"
+$env:DB_PORT = "3306"
+$env:DB_NAME = "your-database-name"
+$env:DB_MIGRATION_USER = "your-migration-user"
+$env:DB_MIGRATION_PASSWORD = "your-migration-password"
+$env:ADMIN_NAME = "Your administrator name"
+$env:ADMIN_EMAIL = "you@example.com"
+$env:ADMIN_PASSWORD = "A new strong password"
+npm run migrate
+npm run seed
+Remove-Item Env:DB_HOST, Env:DB_PORT, Env:DB_NAME, Env:DB_MIGRATION_USER, Env:DB_MIGRATION_PASSWORD, Env:ADMIN_NAME, Env:ADMIN_EMAIL, Env:ADMIN_PASSWORD
+```
+
+Both migration and seed commands use `DB_MIGRATION_USER` and `DB_MIGRATION_PASSWORD`. Never commit production `.env` values or share them in logs. Configure the frontend build variable `VITE_API_BASE_URL` as `https://<api-domain>/api/v1`, then verify the API at `https://<api-domain>/healthz`.
