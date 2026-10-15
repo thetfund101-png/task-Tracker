@@ -2,8 +2,8 @@ import compression from 'compression'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
-import rateLimit from 'express-rate-limit'
-import helmet from 'helmet'
+import { rateLimit } from 'express-rate-limit'
+import * as helmetModule from 'helmet'
 import hpp from 'hpp'
 import { config } from './config.js'
 import { HttpError } from './errors.js'
@@ -21,6 +21,7 @@ import usersRoutes from './routes/users.js'
 import weeklyPlansRoutes from './routes/weekly-plans.js'
 
 export const app = express()
+const helmet = helmetModule.default
 
 const globalRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
