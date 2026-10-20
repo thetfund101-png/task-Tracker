@@ -19,6 +19,7 @@
     "format:check": "prettier --check \"client/**/*.{ts,tsx,js,css,json,html}\" \"server/**/*.{ts,js,json,yaml}\" \"*.{js,mjs,cjs,json,md,yaml}\"",
     "migrate": "npm run migrate --workspace server",
     "seed": "npm run seed --workspace server"
+    
   },
   "devDependencies": {
     "concurrently": "9.1.2",

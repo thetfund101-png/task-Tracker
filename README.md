@@ -62,7 +62,7 @@ Keep the local demo database settings in `.env` matched to `server/db/demo-setup
 node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Use a different generated value for `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`. The example administrator password `DemoFund!2026Admin` meets the seed password rules for local demos; replace it and `ADMIN_EMAIL` before deployment. Passwords must be 12–128 characters and contain lowercase, uppercase, a number, and a special character. Common passwords are rejected. Never commit `.env`.
+Use a different generated value for `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`. When `NODE_ENV` is not `production`, the server has local-only defaults for `CLIENT_ORIGIN` and both JWT secrets if they are omitted; do not use these defaults in production. The example administrator password `DemoFund!2026Admin` meets the seed password rules for local demos; replace it and `ADMIN_EMAIL` before deployment. Passwords must be 12–128 characters and contain lowercase, uppercase, a number, and a special character. Common passwords are rejected. Never commit `.env`.
 
 For local development, keep `CLIENT_ORIGIN=http://localhost:5173` and `COOKIE_SECURE=false`. The client’s Vite development server proxies `/api` to `http://localhost:4000`; no permissive wildcard CORS setting is used.
 
@@ -126,7 +126,9 @@ Additional hardening such as MFA, email-based password reset, and centralized ba
 
 ### Render API setup
 
-The root [`render.yaml`](./render.yaml) defines the Node.js API service, build and start commands, health check, production cookie settings, and generated JWT secrets. In Render, create a Blueprint from this repository and provide the prompted `CLIENT_ORIGIN` and database variables using a reachable MySQL/MariaDB provider. Render's managed PostgreSQL is not compatible with this application's MySQL driver.
+The root [`render.yaml`](./render.yaml) defines the Node.js API service, build and start commands, health check, production cookie settings, and generated JWT secrets. The [`server/.env.example`](./server/.env.example) lists the production environment variables as a reference; the server loads the repository-root `.env` locally. In Render, create a Blueprint from this repository and provide the prompted `CLIENT_ORIGIN` and database variables using a reachable MySQL/MariaDB provider. Render's managed PostgreSQL is not compatible with this application's MySQL driver.
+
+If the service was created manually instead of from the Blueprint, add `CLIENT_ORIGIN`, `JWT_ACCESS_SECRET`, and `JWT_REFRESH_SECRET` in the service's **Environment** settings. Set `CLIENT_ORIGIN` to the frontend's exact HTTPS origin; generate two distinct secrets of at least 32 characters with Render's **Generate** control. Never use placeholder or demo secrets in production. The Blueprint sets the JWT secrets to be generated automatically. If Render's build or start commands differ from the commands in `render.yaml`, verify that the service is using the Blueprint configuration.
 
 Set `CLIENT_ORIGIN` to the exact HTTPS frontend origin without a trailing slash or path. The runtime database user should be limited to `SELECT`, `INSERT`, `UPDATE`, and `DELETE`; use a separate migration user with the permissions needed by the SQL migrations. Do not use the demo credentials from `server/db/demo-setup.sql`.
 
