@@ -13,7 +13,19 @@ const environmentSchema = z.object({
   COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('lax'),
 })
 
-const parsed = environmentSchema.safeParse(process.env)
+const isProduction = process.env.NODE_ENV === 'production'
+const environment = {
+  ...process.env,
+  ...(!isProduction && {
+    CLIENT_ORIGIN: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+    JWT_ACCESS_SECRET:
+      process.env.JWT_ACCESS_SECRET ?? 'local-development-access-secret-do-not-use-in-production',
+    JWT_REFRESH_SECRET:
+      process.env.JWT_REFRESH_SECRET ?? 'local-development-refresh-secret-do-not-use-in-production',
+  }),
+}
+
+const parsed = environmentSchema.safeParse(environment)
 if (!parsed.success) {
   throw new Error(
     `Invalid server configuration: ${parsed.error.issues.map((issue) => issue.path.join('.') + ' ' + issue.message).join('; ')}`,
