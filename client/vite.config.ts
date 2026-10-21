@@ -7,7 +7,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: "https://task-tracker-backend-0tp6.onrender.com",
+        target: http://localhost:4000',
         changeOrigin: true,
       },
     },
